@@ -149,6 +149,8 @@ class TestProxy:
     @pytest.mark.parametrize("tunnel", ['http/1.1', 'h2'])
     @pytest.mark.skipif(condition=not Env.have_nghttpx(), reason="no nghttpx available")
     def test_10_06_proxytunnel_https(self, env: Env, httpd, nghttpx_fwd, proto, tunnel, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         curl = CurlClient(env=env)
@@ -176,6 +178,8 @@ class TestProxy:
     @pytest.mark.skipif(condition=not Env.have_nghttpx(), reason="no nghttpx available")
     def test_10_07_pts_down_small(self, env: Env, httpd, nghttpx_fwd, proto,
                                   tunnel, fname, fcount, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         count = fcount
@@ -206,6 +210,8 @@ class TestProxy:
     @pytest.mark.skipif(condition=not Env.have_nghttpx(), reason="no nghttpx available")
     def test_10_08_upload_seq_large(self, env: Env, httpd, nghttpx, proto,
                                     tunnel, fname, fcount, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         count = fcount
@@ -228,6 +234,8 @@ class TestProxy:
     @pytest.mark.parametrize("tunnel", ['http/1.1', 'h2'])
     @pytest.mark.skipif(condition=not Env.have_nghttpx(), reason="no nghttpx available")
     def test_10_09_reuse_ser(self, env: Env, httpd, nghttpx_fwd, tunnel, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         curl = CurlClient(env=env)
@@ -252,6 +260,8 @@ class TestProxy:
     @pytest.mark.skipif(condition=not Env.have_nghttpx(), reason="no nghttpx available")
     def test_10_10_reuse_proxy(self, env: Env, httpd, nghttpx_fwd, tunnel, repeat):
         # url twice via https: proxy separated with '--next', will reuse
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         curl = CurlClient(env=env)

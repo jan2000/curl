@@ -52,22 +52,19 @@ def init_config_from(conf_path):
     return None
 
 
-TESTS_HTTPD_PATH = os.path.dirname(os.path.dirname(__file__))
-DEF_CONFIG = init_config_from(os.path.join(TESTS_HTTPD_PATH, 'config.ini'))
-
-TOP_PATH = os.path.dirname(os.path.dirname(TESTS_HTTPD_PATH))
-CURL = os.path.join(TOP_PATH, 'src/curl')
-
-
 class EnvConfig:
 
     def __init__(self):
-        self.tests_dir = TESTS_HTTPD_PATH
-        self.gen_dir = os.path.join(self.tests_dir, 'gen')
-        self.project_dir = os.path.dirname(os.path.dirname(self.tests_dir))
-        self.config = DEF_CONFIG
-        # check cur and its features
-        self.curl = CURL
+        project_dir = os.path.normpath(f'{os.path.dirname(__file__)}/../../../')
+        build_dir = project_dir
+        if 'BUILD_DIR' in os.environ:
+            build_dir = os.path.realpath(os.environ['BUILD_DIR'])
+        self.project_dir = project_dir
+        self.build_dir = build_dir
+        self.gen_dir = os.path.normpath(f'{build_dir}/tests/http/gen')
+        self.config = init_config_from(os.path.normpath(f'{build_dir}/tests/http/config.ini'))
+        # check curl and its features
+        self.curl = os.path.normpath(f'{build_dir}/src/curl')
         if 'CURL' in os.environ:
             self.curl = os.environ['CURL']
         self.curl_props = {
@@ -166,6 +163,7 @@ class EnvConfig:
                 log.debug(f'nghttpx -v: {p.stdout}')
 
         self.caddy = self.config['caddy']['caddy']
+        print(f'CADDY: "{self.caddy}"')
         self._caddy_version = None
         if len(self.caddy.strip()) == 0:
             self.caddy = None
@@ -173,6 +171,10 @@ class EnvConfig:
             try:
                 p = subprocess.run(args=[self.caddy, 'version'],
                                    capture_output=True, text=True)
+                print(f'CADDY {self.caddy} version')
+                print(f'stdout\n{p.stdout}')
+                print(f'stderr\n{p.stderr}')
+                print(f'ret {p.returncode}')
                 if p.returncode != 0:
                     # not a working caddy
                     self.caddy = None
@@ -181,15 +183,21 @@ class EnvConfig:
                     self._caddy_version = m.group(1)
                 else:
                     raise f'Unable to determine cadd version from: {p.stdout}'
-            except:
+            except Exception as e:
+                print(f'CADDY exception\n{e}')
                 self.caddy = None
 
         self.vsftpd = self.config['vsftpd']['vsftpd']
+        print(f'VSFTPD: "{self.vsftpd}"')
         self._vsftpd_version = None
         if self.vsftpd is not None:
             try:
                 p = subprocess.run(args=[self.vsftpd, '-v'],
                                    capture_output=True, text=True)
+                print(f'VSFTPD {self.caddy} -v')
+                print(f'stdout\n{p.stdout}')
+                print(f'stderr\n{p.stderr}')
+                print(f'ret {p.returncode}')
                 if p.returncode != 0:
                     # not a working vsftpd
                     self.vsftpd = None
@@ -202,6 +210,7 @@ class EnvConfig:
                 else:
                     raise Exception(f'Unable to determine VsFTPD version from: {p.stderr}')
             except Exception as e:
+                print(f'VSFTPD exception\n{e}')
                 self.vsftpd = None
 
         self._tcpdump = shutil.which('tcpdump')
@@ -440,6 +449,10 @@ class Env:
         return self.CONFIG.project_dir
 
     @property
+    def build_dir(self) -> str:
+        return self.CONFIG.build_dir
+
+    @property
     def ca(self):
         return self._ca
 
@@ -575,7 +588,7 @@ class Env:
         return fpath
 
     def make_clients(self):
-        client_dir = os.path.join(self.project_dir, 'tests/http/clients')
+        client_dir = os.path.normpath(f'{self.build_dir}/tests/http/clients/')
         p = subprocess.run(['make'], capture_output=True, text=True,
                            cwd=client_dir)
         if p.returncode != 0:

@@ -48,7 +48,7 @@ class LocalClient:
                  timeout: Optional[float] = None,
                  run_env: Optional[Dict[str,str]] = None):
         self.name = name
-        self.path = os.path.join(env.project_dir, f'tests/http/clients/{name}')
+        self.path = os.path.normpath(f'{env.build_dir}/tests/http/clients/{name}')
         self.env = env
         self._run_env = run_env
         self._timeout = timeout if timeout else env.test_timeout

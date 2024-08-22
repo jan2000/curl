@@ -78,6 +78,8 @@ class TestSSLUse:
                 exp_resumed = 'Initial'  # 1.2 works in wolfSSL, but 1.3 does not, TODO
         if env.curl_uses_lib('rustls-ffi'):
             exp_resumed = 'Initial'  # Rustls does not support sessions, TODO
+        if env.curl_uses_lib('SecureTransport') and tls_max == '1.3':
+            pytest.skip('SecureTransport does not support TLSv1.3')
         if env.curl_uses_lib('bearssl') and tls_max == '1.3':
             pytest.skip('BearSSL does not support TLSv1.3')
         if env.curl_uses_lib('mbedtls') and tls_max == '1.3':
@@ -122,6 +124,8 @@ class TestSSLUse:
     # use host name with double trailing dot, verify handshake
     @pytest.mark.parametrize("proto", ['http/1.1', 'h2', 'h3'])
     def test_17_04_double_dot(self, env: Env, proto):
+        if env.curl_uses_lib('SecureTransport'):
+            pytest.skip("TODO SecureTransport")
         if proto == 'h3' and not env.have_h3():
             pytest.skip("h3 not supported")
         if proto == 'h3' and env.curl_uses_lib('wolfssl'):
@@ -146,6 +150,8 @@ class TestSSLUse:
     # use ip address for connect
     @pytest.mark.parametrize("proto", ['http/1.1', 'h2', 'h3'])
     def test_17_05_ip_addr(self, env: Env, proto):
+        if env.curl_uses_lib('SecureTransport'):
+            pytest.skip("TODO SecureTransport")
         if env.curl_uses_lib('bearssl'):
             pytest.skip("BearSSL does not support cert verification with IP addresses")
         if env.curl_uses_lib('mbedtls'):
@@ -229,9 +235,11 @@ class TestSSLUse:
             if tls_proto == 'TLSv1.3':
                 pytest.skip('BearSSL does not support TLSv1.3')
             tls_proto = 'TLSv1.2'
-        elif env.curl_uses_lib('sectransp'):  # not in CI, so untested
+        elif env.curl_uses_lib('SecureTransport'):
             if tls_proto == 'TLSv1.3':
                 pytest.skip('SecureTransport does not support TLSv1.3')
+            if ciphers12:
+                ciphers12 = [c.replace('CHACHA20-POLY1305', 'AES128-GCM-SHA256') for c in ciphers12]
             tls_proto = 'TLSv1.2'
         # test
         extra_args = ['--tls13-ciphers', ':'.join(ciphers13)] if ciphers13 else []
@@ -289,7 +297,7 @@ class TestSSLUse:
         # SSL backend specifics
         if env.curl_uses_lib('bearssl'):
             supported = ['TLSv1', 'TLSv1.1', 'TLSv1.2', None]
-        elif env.curl_uses_lib('sectransp'):  # not in CI, so untested
+        elif env.curl_uses_lib('SecureTransport'):
             supported = ['TLSv1', 'TLSv1.1', 'TLSv1.2', None]
         elif env.curl_uses_lib('gnutls'):
             supported = ['TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3']

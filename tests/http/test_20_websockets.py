@@ -68,9 +68,8 @@ class TestWebsockets:
         self._rmrf(run_dir)
         self._mkpath(run_dir)
 
-        with open(err_file, 'w') as cerr:
-            cmd = os.path.join(env.project_dir,
-                               'tests/http/testenv/ws_echo_server.py')
+        with open(err_file, 'w+') as cerr:
+            cmd = os.path.normpath(f'{env.project_dir}/tests/http/testenv/ws_echo_server.py')
             args = [cmd, '--port', str(env.ws_port)]
             p = subprocess.Popen(args=args, cwd=run_dir, stderr=cerr,
                                  stdout=cerr)

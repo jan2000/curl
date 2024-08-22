@@ -149,6 +149,14 @@ class Httpd:
             fd.write('start of server\n')
         with open(os.path.join(self._apache_dir, 'xxx'), 'a') as fd:
             fd.write('start of server\n')
+#         r = self._run(args=[self.env.apachectl, "-d", self._apache_dir, "-f", self._conf_file, "-t"])
+#         print('******************************************************************************************************')
+#         print('APACHE CONFIG TEST')
+#         print('******************************************************************************************************')
+#         print(r.stderr)
+#         print('******************************************************************************************************')
+#         print(r.stdout)
+#         print('******************************************************************************************************')
         r = self._apachectl('start')
         if r.exit_code != 0:
             log.error(f'failed to start httpd: {r}')
@@ -252,6 +260,7 @@ class Httpd:
                 fd.write(f'LoadModule curltest_module   \"{Httpd.MOD_CURLTEST}\"\n')
             conf = [   # base server config
                 f'ServerRoot "{self._apache_dir}"',
+                f'ServerName localhost',
                 f'DefaultRuntimeDir logs',
                 f'PidFile httpd.pid',
                 f'ErrorLog {self._error_log}',
@@ -376,7 +385,6 @@ class Httpd:
                 f'</VirtualHost>',
                 f'',
             ])
-
             fd.write("\n".join(conf))
         with open(os.path.join(self._conf_dir, 'mime.types'), 'w') as fd:
             fd.write("\n".join([
@@ -461,13 +469,12 @@ class Httpd:
     def _init_curltest(self):
         if Httpd.MOD_CURLTEST is not None:
             return
-        local_dir = os.path.dirname(inspect.getfile(Httpd))
+        # TODO should this be based self.env.build_dir ?
+        mod_dir = os.path.normpath(f'{os.path.dirname(__file__)}/mod_curltest/')
         p = subprocess.run([self.env.apxs, '-c', 'mod_curltest.c'],
-                           capture_output=True,
-                           cwd=os.path.join(local_dir, 'mod_curltest'))
+                           capture_output=True, cwd=mod_dir)
         rv = p.returncode
         if rv != 0:
             log.error(f"compiling mod_curltest failed: {p.stderr}")
             raise Exception(f"compiling mod_curltest failed: {p.stderr}")
-        Httpd.MOD_CURLTEST = os.path.join(
-            local_dir, 'mod_curltest/.libs/mod_curltest.so')
+        Httpd.MOD_CURLTEST = os.path.normpath(f'{mod_dir}/.libs/mod_curltest.so')

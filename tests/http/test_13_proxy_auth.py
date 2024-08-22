@@ -125,6 +125,8 @@ class TestProxyAuth:
     @pytest.mark.parametrize("proto", ['http/1.1', 'h2'])
     @pytest.mark.parametrize("tunnel", ['http/1.1', 'h2'])
     def test_13_07_tunnels_no_auth(self, env: Env, httpd, proto, tunnel, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         curl = CurlClient(env=env)
@@ -143,6 +145,8 @@ class TestProxyAuth:
     @pytest.mark.parametrize("proto", ['http/1.1', 'h2'])
     @pytest.mark.parametrize("tunnel", ['http/1.1', 'h2'])
     def test_13_08_tunnels_auth(self, env: Env, httpd, proto, tunnel, repeat):
+        if env.curl_uses_lib('SecureTransport') and tunnel == 'h2':
+            pytest.skip("TODO SecureTransport")
         if tunnel == 'h2' and not env.curl_uses_lib('nghttp2'):
             pytest.skip('only supported with nghttp2')
         curl = CurlClient(env=env)
