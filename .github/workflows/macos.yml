@@ -69,92 +69,93 @@ jobs:
       fail-fast: false
       matrix:
         include:
-#          - name: '!ssl !debug brotli zstd'
-#            compiler: clang
-#            install: brotli zstd
-#            configure: --without-ssl --enable-websockets --with-brotli --with-zstd
-#            macos-version-min: '10.9'
-#          - name: '!ssl !debug'
-#            compiler: gcc-12
-#            configure: --without-ssl --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: '!ssl'
-#            compiler: clang
-#            configure: --enable-debug --without-ssl --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: '!ssl libssh2 AppleIDN'
-#            compiler: clang
-#            configure: --enable-debug --with-libssh2=$(brew --prefix libssh2) --without-ssl --with-apple-idn --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL libssh c-ares'
-#            compiler: clang
-#            install: libssh
-#            configure: --enable-debug --with-libssh --with-openssl=$(brew --prefix openssl) --enable-ares --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL libssh'
-#            compiler: llvm@15
-#            install: libssh
-#            configure: --enable-debug --with-libssh --with-openssl=$(brew --prefix openssl) --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: '!ssl c-ares'
-#            compiler: clang
-#            configure: --enable-debug --enable-ares --without-ssl --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: '!ssl HTTP-only'
-#            compiler: clang
-#            configure: |
-#              --enable-debug \
-#              --disable-alt-svc --disable-dict --disable-file --disable-ftp --disable-gopher --disable-imap \
-#              --disable-ldap --disable-pop3 --disable-rtmp --disable-rtsp --disable-scp --disable-sftp \
-#              --disable-shared --disable-smb --disable-smtp --disable-telnet --disable-tftp --disable-unix-sockets \
-#              --without-brotli --without-gssapi --without-libidn2 --without-libpsl --without-librtmp --without-libssh2 \
-#              --without-nghttp2 --without-ntlm-auth --without-ssl --without-zlib --without-zstd
+          - name: '!ssl !debug brotli zstd'
+            compiler: clang
+            install: brotli zstd
+            configure: --without-ssl --enable-websockets --with-brotli --with-zstd
+            macos-version-min: '10.9'
+          - name: '!ssl !debug'
+            compiler: gcc-12
+            configure: --without-ssl --enable-websockets
+            macos-version-min: '10.9'
+          - name: '!ssl'
+            compiler: clang
+            configure: --enable-debug --without-ssl --enable-websockets
+            macos-version-min: '10.9'
+          - name: '!ssl libssh2 AppleIDN'
+            compiler: clang
+            configure: --enable-debug --with-libssh2=$(brew --prefix libssh2) --without-ssl --with-apple-idn --enable-websockets
+            macos-version-min: '10.9'
+          - name: 'OpenSSL libssh c-ares'
+            compiler: clang
+            install: libssh
+            configure: --enable-debug --with-libssh --with-openssl=$(brew --prefix openssl) --enable-ares --enable-websockets
+            macos-version-min: '10.9'
+          - name: 'OpenSSL libssh'
+            compiler: llvm@15
+            install: libssh
+            configure: --enable-debug --with-libssh --with-openssl=$(brew --prefix openssl) --enable-websockets
+            macos-version-min: '10.9'
+          - name: '!ssl c-ares'
+            compiler: clang
+            configure: --enable-debug --enable-ares --without-ssl --enable-websockets
+            macos-version-min: '10.9'
+          - name: '!ssl HTTP-only'
+            compiler: clang
+            configure: |
+              --enable-debug \
+              --disable-alt-svc --disable-dict --disable-file --disable-ftp --disable-gopher --disable-imap \
+              --disable-ldap --disable-pop3 --disable-rtmp --disable-rtsp --disable-scp --disable-sftp \
+              --disable-shared --disable-smb --disable-smtp --disable-telnet --disable-tftp --disable-unix-sockets \
+              --without-brotli --without-gssapi --without-libidn2 --without-libpsl --without-librtmp --without-libssh2 \
+              --without-nghttp2 --without-ntlm-auth --without-ssl --without-zlib --without-zstd
+
+            macos-version-min: '10.15'  # Catalina (2019)
 #
-#            macos-version-min: '10.15'  # Catalina (2019)
           - name: 'SecureTransport libssh2'
             compiler: clang
-            install: httpd caddy vsftpd
             configure: --enable-debug --with-secure-transport --enable-websockets --with-libssh2=$(brew --prefix libssh2)
             macos-version-min: '10.8'
-#          - name: 'SecureTransport libssh2 10.12'
-#            compiler: clang
-#            configure: --enable-debug --with-secure-transport --enable-websockets --with-libssh2=$(brew --prefix libssh2)
-#            macos-version-min: '10.12'  # for monotonic timers
-#            cflags: '-Wno-deprecated-declarations'
-#          - name: 'SecureTransport libssh2'
-#            compiler: gcc-12
-#            configure: --enable-debug --with-secure-transport --enable-websockets --with-libssh2=$(brew --prefix libssh2)
-#            macos-version-min: '10.8'
-#          - name: 'LibreSSL'
-#            compiler: clang
-#            install: libressl
-#            configure: --enable-debug --with-openssl=$(brew --prefix libressl) --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL'
-#            compiler: clang
-#            configure: --enable-debug --with-openssl=$(brew --prefix openssl) --enable-websockets
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL torture !FTP'
-#            compiler: clang
-#            configure: --enable-debug --disable-shared --disable-threaded-resolver --with-openssl=$(brew --prefix openssl) --enable-websockets
-#            tflags: -n -t --shallow=25 !FTP
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL torture FTP'
-#            compiler: clang
-#            configure: --enable-debug --disable-shared --disable-threaded-resolver --with-openssl=$(brew --prefix openssl) --enable-websockets
-#            tflags: -n -t --shallow=20 FTP
-#            macos-version-min: '10.9'
-#          - name: 'OpenSSL libssh2 !ldap 10.15'
-#            compiler: clang
-#            configure: --enable-debug --disable-ldap --with-openssl=$(brew --prefix openssl) --enable-websockets
-#            macos-version-min: '10.15'
+#
+          - name: 'SecureTransport libssh2 10.12'
+            compiler: clang
+            configure: --enable-debug --with-secure-transport --enable-websockets --with-libssh2=$(brew --prefix libssh2)
+            macos-version-min: '10.12'  # for monotonic timers
+            cflags: '-Wno-deprecated-declarations'
+          - name: 'SecureTransport libssh2'
+            compiler: gcc-12
+            configure: --enable-debug --with-secure-transport --enable-websockets --with-libssh2=$(brew --prefix libssh2)
+            macos-version-min: '10.8'
+          - name: 'LibreSSL'
+            compiler: clang
+            install: libressl
+            configure: --enable-debug --with-openssl=$(brew --prefix libressl) --enable-websockets
+            macos-version-min: '10.9'
+          - name: 'OpenSSL'
+            compiler: clang
+            configure: --enable-debug --with-openssl=$(brew --prefix openssl) --enable-websockets
+            macos-version-min: '10.9'
+          - name: 'OpenSSL torture !FTP'
+            compiler: clang
+            configure: --enable-debug --disable-shared --disable-threaded-resolver --with-openssl=$(brew --prefix openssl) --enable-websockets
+            tflags: -n -t --shallow=25 !FTP
+            macos-version-min: '10.9'
+          - name: 'OpenSSL torture FTP'
+            compiler: clang
+            configure: --enable-debug --disable-shared --disable-threaded-resolver --with-openssl=$(brew --prefix openssl) --enable-websockets
+            tflags: -n -t --shallow=20 FTP
+            macos-version-min: '10.9'
+          - name: 'OpenSSL libssh2 !ldap 10.15'
+            compiler: clang
+            configure: --enable-debug --disable-ldap --with-openssl=$(brew --prefix openssl) --enable-websockets
+            macos-version-min: '10.15'
     steps:
       - name: 'brew install'
         # Run this command with retries because of spurious failures seen
         # while running the tests, for example
         # https://github.com/curl/curl/runs/4095721123?check_suite_focus=true
         run: |
-          echo libtool autoconf automake pkg-config libpsl libssh2 nghttp2 openssl ${{ matrix.install }} | xargs -Ix -n1 echo brew '"x"' > /tmp/Brewfile
+          echo libtool autoconf automake pkg-config libpsl libssh2 nghttp2 openssl ${{ matrix.install }} httpd caddy vsftpd | xargs -Ix -n1 echo brew '"x"' > /tmp/Brewfile
           while [[ $? == 0 ]]; do for i in 1 2 3; do brew update && brew bundle install --no-lock --file /tmp/Brewfile && break 2 || { echo Error: wait to try again; sleep 10; } done; false Too many retries; done
 
       - name: 'brew unlink openssl'
@@ -407,7 +408,7 @@ jobs:
           make -C bld test-ci
 
   combinations:  # Test buildability with host OS, Xcode / SDK, compiler, target-OS, SecureTransport/not, built tool, combinations
-    if: false  # Set to `true` to enable this test matrix. It runs quickly.
+    if: true  # Set to `true` to enable this test matrix. It runs quickly.
     name: "${{ matrix.build == 'cmake' && 'CM' || 'AM' }} ${{ matrix.compiler }} ${{ matrix.image }} ${{ matrix.xcode }} ${{ matrix.config }}"
     runs-on: ${{ matrix.image }}
     timeout-minutes: 30
